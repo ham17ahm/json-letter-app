@@ -9,7 +9,7 @@ import JsonInput from "../components/JsonInput";
 export default function Home() {
   const [text, setText] = useState(`[
   {
-    "full_name": "Mujeeb Ahmad Rana",
+    "full_name": "Rana Waseem Ahmad",
     "location": "London, UK",
     "inquiry": "I have received your letter inquiring whether listening to Qawwali is permissible in Islam.",
     "note": "You may listen to meaningful Qawallis.",
