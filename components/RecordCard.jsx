@@ -32,7 +32,7 @@ export default function RecordCard({ record, index, onUpdate }) {
       {/* Name + Location side by side */}
       <TwoColumnFields record={record} onUpdate={onUpdate} />
 
-      {/* Inquiry field */}
+      {/* Inquiry field WITH quick phrases */}
       <div style={styles.fieldContainer}>
         <TextAreaField
           label="Inquiry"
@@ -40,10 +40,11 @@ export default function RecordCard({ record, index, onUpdate }) {
           onChange={(value) => onUpdate("inquiry", value)}
           placeholder="Write the inquiry…"
           rows={4}
+          fieldName="inquiry"
         />
       </div>
 
-      {/* Note field */}
+      {/* Note field WITHOUT quick phrases */}
       <div style={styles.fieldContainer}>
         <TextAreaField
           label="Note"
@@ -54,7 +55,7 @@ export default function RecordCard({ record, index, onUpdate }) {
         />
       </div>
 
-      {/* Prayer sentence field */}
+      {/* Prayer sentence field WITH quick phrases */}
       <div style={styles.fieldContainer}>
         <TextAreaField
           label="Prayer sentence"
@@ -62,6 +63,7 @@ export default function RecordCard({ record, index, onUpdate }) {
           onChange={(value) => onUpdate("prayer_sentence", value)}
           placeholder="Write the prayer sentence…"
           rows={3}
+          fieldName="prayer_sentence"
         />
       </div>
 
