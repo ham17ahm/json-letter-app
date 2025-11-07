@@ -3,20 +3,19 @@
 import { useState, useMemo } from "react";
 import EditorTable from "../components/EditorTable";
 import { openPrintPreview } from "../lib/print";
-import { REQUIRED_KEYS, validateArrayOfObjects } from "../lib/validation";
+import { validateArrayOfObjects } from "../lib/validation";
+import { REQUIRED_KEYS, APP_CONFIG } from "../lib/constants";
+import {
+  colors,
+  radius,
+  spacing,
+  typography,
+  commonStyles,
+} from "../lib/styles";
 import JsonInput from "../components/JsonInput";
 
 export default function Home() {
-  const [text, setText] = useState(`[
-  {
-    "full_name": "Rana Waseem Ahmad",
-    "location": "London, UK",
-    "inquiry": "I have received your letter inquiring whether listening to Qawwali is permissible in Islam.",
-    "note": "You may listen to meaningful Qawallis.",
-    "prayer_sentence": "May Allah Ta'ala grant you success in your studies and bless you with the wisdom to distinguish between right and wrong. Amin"
-  }
-]`);
-
+  const [text, setText] = useState(APP_CONFIG.defaultJsonExample);
   const [records, setRecords] = useState([]);
 
   const validation = useMemo(() => {
@@ -43,17 +42,76 @@ export default function Home() {
     return [...REQUIRED_KEYS, ...Array.from(extras)];
   }, [records]);
 
+  // Page-specific styles
+  const styles = {
+    main: {
+      maxWidth: APP_CONFIG.maxWidth,
+      margin: "40px auto",
+      padding: "0 16px",
+      fontFamily: typography.fontFamily,
+    },
+    title: {
+      marginBottom: spacing.sm,
+    },
+    subtitle: {
+      color: colors.gray600,
+      marginTop: 0,
+    },
+    validationRow: {
+      display: "flex",
+      gap: 10,
+      alignItems: "center",
+      marginTop: spacing.md,
+    },
+    validationMessage: (isValid) => ({
+      fontSize: typography.sizes.base,
+      color: isValid ? colors.success : colors.error,
+    }),
+    processButton: (isValid) => ({
+      marginLeft: "auto",
+      padding: "10px 14px",
+      borderRadius: radius.sm,
+      border: `1px solid ${colors.gray500}`,
+      background: isValid ? colors.black : colors.disabled,
+      color: colors.white,
+      cursor: isValid ? "pointer" : "not-allowed",
+      fontWeight: 600,
+    }),
+    resultsSection: {
+      marginTop: spacing.xl,
+    },
+    resultsHeader: {
+      display: "flex",
+      alignItems: "center",
+      gap: 10,
+      marginBottom: spacing.sm,
+    },
+    recordCount: {
+      fontSize: typography.sizes.base,
+      color: colors.gray800,
+    },
+    buttonGroup: {
+      marginLeft: "auto",
+      display: "flex",
+      gap: spacing.sm,
+    },
+    printButton: {
+      ...commonStyles.buttonPrimary,
+    },
+    clearButton: {
+      ...commonStyles.buttonSecondary,
+    },
+    tip: {
+      fontSize: typography.sizes.xs,
+      color: colors.gray600,
+      marginTop: spacing.sm,
+    },
+  };
+
   return (
-    <main
-      style={{
-        maxWidth: 1000,
-        margin: "40px auto",
-        padding: "0 16px",
-        fontFamily: "system-ui, sans-serif",
-      }}
-    >
-      <h1 style={{ marginBottom: 8 }}>JSON → Letter (Step 6)</h1>
-      <p style={{ color: "#666", marginTop: 0 }}>
+    <main style={styles.main}>
+      <h1 style={styles.title}>{APP_CONFIG.title}</h1>
+      <p style={styles.subtitle}>
         Paste your JSON, click <strong>Process</strong>, edit in the table, then{" "}
         <strong>Print Preview</strong>.
       </p>
@@ -61,31 +119,14 @@ export default function Home() {
       {/* JSON input */}
       <JsonInput value={text} onChange={setText} />
 
-      <div
-        style={{
-          display: "flex",
-          gap: 10,
-          alignItems: "center",
-          marginTop: 12,
-        }}
-      >
-        <span
-          style={{ fontSize: 14, color: validation.ok ? "green" : "#b60000" }}
-        >
+      <div style={styles.validationRow}>
+        <span style={styles.validationMessage(validation.ok)}>
           {validation.message}
         </span>
         <button
           onClick={onProcess}
           disabled={!validation.ok}
-          style={{
-            marginLeft: "auto",
-            padding: "10px 14px",
-            borderRadius: 8,
-            border: "1px solid #ccc",
-            background: validation.ok ? "#111" : "#888",
-            color: "#fff",
-            cursor: validation.ok ? "pointer" : "not-allowed",
-          }}
+          style={styles.processButton(validation.ok)}
         >
           Process
         </button>
@@ -93,40 +134,20 @@ export default function Home() {
 
       {/* Editable table + Print */}
       {records.length > 0 && (
-        <section style={{ marginTop: 24 }}>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 10,
-              marginBottom: 8,
-            }}
-          >
-            <span style={{ fontSize: 14, color: "#444" }}>
-              {records.length} record(s)
-            </span>
-            <div style={{ marginLeft: "auto", display: "flex", gap: 8 }}>
+        <section style={styles.resultsSection}>
+          <div style={styles.resultsHeader}>
+            <span style={styles.recordCount}>{records.length} record(s)</span>
+            <div style={styles.buttonGroup}>
               <button
                 onClick={() => openPrintPreview(records)}
-                style={{
-                  padding: "8px 12px",
-                  borderRadius: 8,
-                  border: "1px solid #ccc",
-                  background: "#111",
-                  color: "#fff",
-                }}
+                style={styles.printButton}
                 title="Open print preview in a new tab"
               >
                 Print Preview
               </button>
               <button
                 onClick={() => setRecords([])}
-                style={{
-                  padding: "8px 12px",
-                  borderRadius: 8,
-                  border: "1px solid #ccc",
-                  background: "#f8f8f8",
-                }}
+                style={styles.clearButton}
                 title="Hide the table (JSON text remains as-is)"
               >
                 Clear Table
@@ -140,7 +161,7 @@ export default function Home() {
             onChange={setRecords}
           />
 
-          <p style={{ fontSize: 12, color: "#666", marginTop: 8 }}>
+          <p style={styles.tip}>
             Tip: Print Preview uses what you see in the table right now.
           </p>
         </section>

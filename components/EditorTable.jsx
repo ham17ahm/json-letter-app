@@ -1,14 +1,15 @@
 // components/EditorTable.jsx
-const REQUIRED_KEYS = [
-  "full_name",
-  "location",
-  "inquiry",
-  "note",
-  "prayer_sentence",
-];
+import { REQUIRED_KEYS } from "../lib/constants";
+import {
+  colors,
+  radius,
+  spacing,
+  typography,
+  commonStyles,
+  mergeStyles,
+} from "../lib/styles";
 
 export default function EditorTable({ records, columns, onChange }) {
-  // keep the same props; "columns" is ignored now
   function updateField(rowIndex, key, value) {
     onChange((prev) => {
       const next = [...prev];
@@ -17,8 +18,61 @@ export default function EditorTable({ records, columns, onChange }) {
     });
   }
 
+  // Component-specific styles
+  const styles = {
+    container: {
+      display: "grid",
+      gap: spacing.lg,
+    },
+    cardHeader: {
+      display: "flex",
+      alignItems: "center",
+      marginBottom: spacing.md,
+    },
+    cardTitle: {
+      fontWeight: 600,
+    },
+    cardSubtitle: {
+      marginLeft: "auto",
+      fontSize: typography.sizes.xs,
+      color: colors.gray600,
+    },
+    twoColumnGrid: {
+      display: "grid",
+      gridTemplateColumns: "1fr 1fr",
+      gap: spacing.md,
+      marginBottom: spacing.md,
+    },
+    fieldContainer: {
+      marginBottom: spacing.md,
+    },
+    extraFieldsContainer: {
+      marginTop: spacing.sm,
+    },
+    extraFieldsTitle: {
+      fontSize: typography.sizes.sm,
+      color: colors.gray600,
+      marginBottom: 6,
+    },
+    extraFieldsGrid: {
+      display: "grid",
+      gap: 10,
+    },
+    extraFieldLabel: {
+      display: "block",
+      fontSize: typography.sizes.xs,
+      color: colors.gray700,
+      marginBottom: 4,
+    },
+    extraFieldInput: {
+      ...commonStyles.textInput,
+      height: 40,
+      fontSize: typography.sizes.base,
+    },
+  };
+
   return (
-    <div style={{ display: "grid", gap: 16 }}>
+    <div style={styles.container}>
       {records.map((row, i) => {
         // Any extra keys beyond the required ones will also be rendered at the end
         const extraKeys = Object.keys(row || {}).filter(
@@ -26,167 +80,67 @@ export default function EditorTable({ records, columns, onChange }) {
         );
 
         return (
-          <div
-            key={i}
-            style={{
-              border: "1px solid #ddd",
-              borderRadius: 12,
-              padding: 16,
-              background: "#fafafa",
-            }}
-          >
+          <div key={i} style={commonStyles.card}>
             {/* Card header */}
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                marginBottom: 12,
-              }}
-            >
-              <div style={{ fontWeight: 600 }}>Record #{i + 1}</div>
-              <div style={{ marginLeft: "auto", fontSize: 12, color: "#666" }}>
+            <div style={styles.cardHeader}>
+              <div style={styles.cardTitle}>Record #{i + 1}</div>
+              <div style={styles.cardSubtitle}>
                 Required: full_name, location, inquiry, note, prayer_sentence
               </div>
             </div>
 
             {/* Name + Location on the same line */}
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr",
-                gap: 12,
-                marginBottom: 12,
-              }}
-            >
+            <div style={styles.twoColumnGrid}>
               <div>
-                <label
-                  style={{
-                    display: "block",
-                    fontSize: 13,
-                    color: "#444",
-                    marginBottom: 6,
-                  }}
-                >
-                  Full name
-                </label>
+                <label style={commonStyles.label}>Full name</label>
                 <input
                   type="text"
                   value={row?.full_name ?? ""}
                   onChange={(e) => updateField(i, "full_name", e.target.value)}
                   placeholder="Full name"
-                  style={{
-                    width: "100%",
-                    border: "1px solid #ccc",
-                    borderRadius: 10,
-                    padding: "12px 14px",
-                    height: 44,
-                    fontSize: 16,
-                    background: "#fff",
-                  }}
+                  style={commonStyles.textInput}
                 />
               </div>
 
               <div>
-                <label
-                  style={{
-                    display: "block",
-                    fontSize: 13,
-                    color: "#444",
-                    marginBottom: 6,
-                  }}
-                >
-                  Location
-                </label>
+                <label style={commonStyles.label}>Location</label>
                 <input
                   type="text"
                   value={row?.location ?? ""}
                   onChange={(e) => updateField(i, "location", e.target.value)}
                   placeholder="Location"
-                  style={{
-                    width: "100%",
-                    border: "1px solid #ccc",
-                    borderRadius: 10,
-                    padding: "12px 14px",
-                    height: 44,
-                    fontSize: 16,
-                    background: "#fff",
-                  }}
+                  style={commonStyles.textInput}
                 />
               </div>
             </div>
 
             {/* Inquiry */}
-            <div style={{ marginBottom: 12 }}>
-              <label
-                style={{
-                  display: "block",
-                  fontSize: 13,
-                  color: "#444",
-                  marginBottom: 6,
-                }}
-              >
-                Inquiry
-              </label>
+            <div style={styles.fieldContainer}>
+              <label style={commonStyles.label}>Inquiry</label>
               <textarea
                 value={row?.inquiry ?? ""}
                 onChange={(e) => updateField(i, "inquiry", e.target.value)}
                 placeholder="Write the inquiry…"
                 rows={4}
-                style={{
-                  width: "100%",
-                  border: "1px solid #ccc",
-                  borderRadius: 10,
-                  padding: "12px 14px",
-                  fontSize: 15,
-                  lineHeight: 1.4,
-                  resize: "vertical",
-                  background: "#fff",
-                }}
+                style={commonStyles.textarea}
               />
             </div>
 
             {/* Note */}
-            <div style={{ marginBottom: 12 }}>
-              <label
-                style={{
-                  display: "block",
-                  fontSize: 13,
-                  color: "#444",
-                  marginBottom: 6,
-                }}
-              >
-                Note
-              </label>
+            <div style={styles.fieldContainer}>
+              <label style={commonStyles.label}>Note</label>
               <textarea
                 value={row?.note ?? ""}
                 onChange={(e) => updateField(i, "note", e.target.value)}
                 placeholder="Write the guidance/note…"
                 rows={4}
-                style={{
-                  width: "100%",
-                  border: "1px solid #ccc",
-                  borderRadius: 10,
-                  padding: "12px 14px",
-                  fontSize: 15,
-                  lineHeight: 1.4,
-                  resize: "vertical",
-                  background: "#fff",
-                }}
+                style={commonStyles.textarea}
               />
             </div>
 
             {/* Prayer sentence */}
-            <div style={{ marginBottom: 12 }}>
-              <label
-                style={{
-                  display: "block",
-                  fontSize: 13,
-                  color: "#444",
-                  marginBottom: 6,
-                }}
-              >
-                Prayer sentence
-              </label>
+            <div style={styles.fieldContainer}>
+              <label style={commonStyles.label}>Prayer sentence</label>
               <textarea
                 value={row?.prayer_sentence ?? ""}
                 onChange={(e) =>
@@ -194,52 +148,24 @@ export default function EditorTable({ records, columns, onChange }) {
                 }
                 placeholder="Write the prayer sentence…"
                 rows={3}
-                style={{
-                  width: "100%",
-                  border: "1px solid #ccc",
-                  borderRadius: 10,
-                  padding: "12px 14px",
-                  fontSize: 15,
-                  lineHeight: 1.4,
-                  resize: "vertical",
-                  background: "#fff",
-                }}
+                style={commonStyles.textarea}
               />
             </div>
 
             {/* Render any other fields present in the JSON */}
             {extraKeys.length > 0 && (
-              <div style={{ marginTop: 8 }}>
-                <div style={{ fontSize: 13, color: "#666", marginBottom: 6 }}>
-                  Other fields
-                </div>
-                <div style={{ display: "grid", gap: 10 }}>
+              <div style={styles.extraFieldsContainer}>
+                <div style={styles.extraFieldsTitle}>Other fields</div>
+                <div style={styles.extraFieldsGrid}>
                   {extraKeys.map((k) => (
                     <div key={k}>
-                      <label
-                        style={{
-                          display: "block",
-                          fontSize: 12,
-                          color: "#555",
-                          marginBottom: 4,
-                        }}
-                      >
-                        {k}
-                      </label>
+                      <label style={styles.extraFieldLabel}>{k}</label>
                       <input
                         type="text"
                         value={row?.[k] ?? ""}
                         onChange={(e) => updateField(i, k, e.target.value)}
                         placeholder={k}
-                        style={{
-                          width: "100%",
-                          border: "1px solid #ccc",
-                          borderRadius: 8,
-                          padding: "10px 12px",
-                          height: 40,
-                          fontSize: 14,
-                          background: "#fff",
-                        }}
+                        style={styles.extraFieldInput}
                       />
                     </div>
                   ))}
