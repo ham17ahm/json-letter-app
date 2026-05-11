@@ -1,171 +1,125 @@
-"use client";
+import Link from "next/link";
+import { APP_CONFIG } from "../lib/constants";
 
-import { useState, useMemo } from "react";
-import EditorTable from "../components/EditorTable";
-import { openPrintPreview } from "../lib/print";
-import { validateArrayOfObjects } from "../lib/validation";
-import { REQUIRED_KEYS, APP_CONFIG } from "../lib/constants";
-import {
-  colors,
-  radius,
-  spacing,
-  typography,
-  commonStyles,
-} from "../lib/styles";
-import JsonInput from "../components/JsonInput";
-
-export default function Home() {
-  const [text, setText] = useState(APP_CONFIG.defaultJsonExample);
-  const [records, setRecords] = useState([]);
-
-  const validation = useMemo(() => {
-    try {
-      const data = JSON.parse(text);
-      return validateArrayOfObjects(data);
-    } catch (e) {
-      return { ok: false, message: "Invalid JSON: " + e.message };
-    }
-  }, [text]);
-
-  function onProcess() {
-    const data = JSON.parse(text);
-    setRecords(data);
-  }
-
-  const columns = useMemo(() => {
-    const extras = new Set();
-    records.forEach((r) =>
-      Object.keys(r || {}).forEach((k) => {
-        if (!REQUIRED_KEYS.includes(k)) extras.add(k);
-      })
-    );
-    return [...REQUIRED_KEYS, ...Array.from(extras)];
-  }, [records]);
-
-  // Page-specific styles
+export default function CoverPage() {
   const styles = {
     main: {
-      maxWidth: APP_CONFIG.maxWidth,
-      margin: "40px auto",
-      padding: "0 16px",
-      fontFamily: typography.fontFamily,
+      minHeight: "100vh",
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center",
+      fontFamily: "'Segoe UI', system-ui, -apple-system, sans-serif",
+      background: "linear-gradient(135deg, #f5f7fa 0%, #e4e9f0 100%)",
+      padding: 24,
+    },
+    card: {
+      background: "#fff",
+      borderRadius: 20,
+      padding: "52px 48px",
+      textAlign: "center",
+      maxWidth: 460,
+      width: "100%",
+      boxShadow:
+        "0 4px 24px rgba(0, 0, 0, 0.06), 0 1px 4px rgba(0, 0, 0, 0.04)",
+    },
+    icon: {
+      display: "inline-flex",
+      alignItems: "center",
+      justifyContent: "center",
+      width: 56,
+      height: 56,
+      borderRadius: 16,
+      background: "linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)",
+      marginBottom: 20,
+      fontSize: 24,
     },
     title: {
-      marginBottom: spacing.sm,
+      margin: "0 0 8px 0",
+      fontSize: 24,
+      fontWeight: 700,
+      color: "#1a1a2e",
+      letterSpacing: "-0.3px",
     },
     subtitle: {
-      color: colors.gray600,
-      marginTop: 0,
-    },
-    validationRow: {
-      display: "flex",
-      gap: 10,
-      alignItems: "center",
-      marginTop: spacing.md,
-    },
-    validationMessage: (isValid) => ({
-      fontSize: typography.sizes.base,
-      color: isValid ? colors.success : colors.error,
-    }),
-    processButton: (isValid) => ({
-      marginLeft: "auto",
-      padding: "10px 14px",
-      borderRadius: radius.sm,
-      border: `1px solid ${colors.gray500}`,
-      background: isValid ? colors.black : colors.disabled,
-      color: colors.white,
-      cursor: isValid ? "pointer" : "not-allowed",
-      fontWeight: 600,
-    }),
-    resultsSection: {
-      marginTop: spacing.xl,
-    },
-    resultsHeader: {
-      display: "flex",
-      alignItems: "center",
-      gap: 10,
-      marginBottom: spacing.sm,
-    },
-    recordCount: {
-      fontSize: typography.sizes.base,
-      color: colors.gray800,
+      margin: "0 0 36px 0",
+      color: "#8b8fa3",
+      fontSize: 14,
+      fontWeight: 400,
     },
     buttonGroup: {
-      marginLeft: "auto",
       display: "flex",
-      gap: spacing.sm,
+      gap: 14,
     },
-    printButton: {
-      ...commonStyles.buttonPrimary,
+    linkCard: (gradient) => ({
+      flex: 1,
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      padding: "28px 20px 22px",
+      borderRadius: 14,
+      background: gradient,
+      textDecoration: "none",
+      transition: "transform 0.2s ease, box-shadow 0.2s ease",
+      cursor: "pointer",
+      border: "none",
+    }),
+    linkAbbr: {
+      fontSize: 28,
+      fontWeight: 700,
+      color: "#fff",
+      letterSpacing: "1px",
+      marginBottom: 8,
     },
-    clearButton: {
-      ...commonStyles.buttonSecondary,
+    linkLabel: {
+      fontSize: 12,
+      color: "rgba(255, 255, 255, 0.8)",
+      fontWeight: 500,
     },
-    tip: {
-      fontSize: typography.sizes.xs,
-      color: colors.gray600,
-      marginTop: spacing.sm,
+    footer: {
+      marginTop: 28,
+      fontSize: 12,
+      color: "#b0b4c4",
+      letterSpacing: "0.3px",
     },
   };
 
   return (
     <main style={styles.main}>
-      <h1 style={styles.title}>{APP_CONFIG.title}</h1>
-      <p style={styles.subtitle}>
-        Paste your JSON, click <strong>Process</strong>, edit in the table, then{" "}
-        <strong>Print Preview</strong>.
-      </p>
+      <div style={styles.card}>
+        <div style={styles.icon}>
+          <span role="img" style={{ color: "#fff", lineHeight: 1 }}>
+            ✉
+          </span>
+        </div>
 
-      {/* JSON input */}
-      <JsonInput value={text} onChange={setText} />
+        <h1 style={styles.title}>{APP_CONFIG.title}</h1>
+        <p style={styles.subtitle}>Select a version to open</p>
 
-      <div style={styles.validationRow}>
-        <span style={styles.validationMessage(validation.ok)}>
-          {validation.message}
-        </span>
-        <button
-          onClick={onProcess}
-          disabled={!validation.ok}
-          style={styles.processButton(validation.ok)}
-        >
-          Process
-        </button>
+        <div style={styles.buttonGroup}>
+          <Link
+            href="/hz"
+            style={styles.linkCard(
+              "linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%)"
+            )}
+          >
+            <span style={styles.linkAbbr}>HZ</span>
+            <span style={styles.linkLabel}>The unmodified version</span>
+          </Link>
+
+          <Link
+            href="/ps"
+            style={styles.linkCard(
+              "linear-gradient(135deg, #4a5568 0%, #636e80 100%)"
+            )}
+          >
+            <span style={styles.linkAbbr}>PS</span>
+            <span style={styles.linkLabel}>The version for amendments</span>
+          </Link>
+        </div>
+
+        <p style={styles.footer}>Choose a workflow to get started</p>
       </div>
-
-      {/* Editable table + Print */}
-      {records.length > 0 && (
-        <section style={styles.resultsSection}>
-          <div style={styles.resultsHeader}>
-            <span style={styles.recordCount}>{records.length} record(s)</span>
-            <div style={styles.buttonGroup}>
-              <button
-                onClick={() => openPrintPreview(records)}
-                style={styles.printButton}
-                title="Open print preview in a new tab"
-              >
-                Print Preview
-              </button>
-              <button
-                onClick={() => setRecords([])}
-                style={styles.clearButton}
-                title="Hide the table (JSON text remains as-is)"
-              >
-                Clear Table
-              </button>
-            </div>
-          </div>
-
-          <EditorTable
-            records={records}
-            columns={columns}
-            onChange={setRecords}
-          />
-
-          <p style={styles.tip}>
-            Tip: Print Preview uses what you see in the table right now.
-          </p>
-        </section>
-      )}
     </main>
   );
 }
