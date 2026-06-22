@@ -1,4 +1,4 @@
 @echo off
-cd C:\Users\Hamad.Mobeen\Downloads\json-letter-app
-call npm run dev
+cd /d "%~dp0"
+call npx next dev -p 3050
 pause
